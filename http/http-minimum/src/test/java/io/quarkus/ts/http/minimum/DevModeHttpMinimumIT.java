@@ -27,11 +27,9 @@ public class DevModeHttpMinimumIT {
     @Test
     public void shouldDetectNewTests() {
         // At first, there are no tests annotated with @QuarkusTest
-        app.logs().assertContains("Tests paused, press [r] to resume");
+        app.logs().assertContains("Tests paused");
         // Now, we enable continuous testing via DEV UI
         app.enableContinuousTesting();
-        // We wait for Quarkus to run the tests
-        app.logs().assertContains("Running Tests for the first time");
         // But there are no tests yet
         app.logs().assertContains("No tests found");
         // We add a new test
