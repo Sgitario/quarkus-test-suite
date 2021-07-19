@@ -29,7 +29,7 @@ public class QuarkusCliExtensionsIT {
     static final String AGROAL_EXTENSION_NAME = "Agroal - Database connection pool";
     static final String AGROAL_EXTENSION_ARTIFACT = "quarkus-agroal";
     static final String AGROAL_EXTENSION_GUIDE = "https://quarkus.io/guides/datasource";
-    static final List<String> EXPECTED_PLATFORM_VERSIONS = Arrays.asList("1.13.4.Final", "1.13.7.Final");
+    static final List<String> EXPECTED_PLATFORM_VERSIONS = Arrays.asList("2.0.0.Final", "2.1.0.CR1");
 
     @Inject
     static QuarkusCliClient cliClient;
