@@ -3,7 +3,10 @@ package io.quarkus.ts.http.minimum;
 import static org.hamcrest.CoreMatchers.is;
 
 import org.apache.http.HttpStatus;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
 import io.quarkus.test.bootstrap.DevModeQuarkusService;
 import io.quarkus.test.scenarios.QuarkusScenario;
@@ -15,6 +18,8 @@ import io.quarkus.test.utils.AwaitilityUtils;
 @QuarkusScenario
 @DisabledOnNative
 @DisabledOnQuarkusVersion(version = "1\\..*", reason = "Continuous Testing was entered in 2.x")
+// Workaround for https://github.com/quarkusio/quarkus/issues/18883. After fixed, we should remove the `@Order` annotations too.
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class DevModeHttpMinimumIT {
 
     static final String HELLO_IN_ENGLISH = "Hello, %s!";
@@ -25,6 +30,7 @@ public class DevModeHttpMinimumIT {
     static DevModeQuarkusService app = new DevModeQuarkusService();
 
     @Test
+    @Order(1)
     public void shouldDetectNewTests() {
         // At first, there are no tests annotated with @QuarkusTest
         app.logs().assertContains("Tests paused");
@@ -39,6 +45,7 @@ public class DevModeHttpMinimumIT {
     }
 
     @Test
+    @Order(2)
     public void shouldDetectChanges() {
         // Should say first Victor (the default name)
         app.given().get("/hello").then().statusCode(HttpStatus.SC_OK)
@@ -52,5 +59,19 @@ public class DevModeHttpMinimumIT {
         AwaitilityUtils.untilAsserted(
                 () -> app.given().get("/hello").then().statusCode(HttpStatus.SC_OK)
                         .body("content", is(String.format(HELLO_IN_SPANISH, WORLD))));
+    }
+
+    @Test
+    @Order(3)
+    public void shouldDetectNewTestsAfterMakingChanges() {
+        // Make some change
+        app.modifyFile("src/main/java/io/quarkus/ts/http/minimum/HelloResource.java",
+                content -> content.replace(HELLO_IN_ENGLISH, HELLO_IN_SPANISH));
+        // Enable continuous testing
+        app.enableContinuousTesting();
+        // We add a new test
+        app.copyFile("src/test/resources/HelloResourceTest.java.template", "src/test/java/HelloResourceTest.java");
+        // So good so far!
+        app.logs().assertContains("All 1 test is passing");
     }
 }
