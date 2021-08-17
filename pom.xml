@@ -92,6 +92,7 @@
         <module>kamelet</module>
         <module>spring/spring-data</module>
         <module>spring/spring-web</module>
+        <module>spring/spring-cloud-config</module>
         <module>logging/jboss</module>
         <module>cache/caffeine</module>
     </modules>
@@ -270,6 +271,7 @@
                                 <redis.image>quay.io/bitnami/redis:6.0</redis.image>
                                 <wiremock.image>quay.io/ocpmetal/wiremock</wiremock.image>
                                 <consul.image>quay.io/bitnami/consul:1.9.3</consul.image>
+                                <spring.cloud.server.image>hyness/spring-cloud-config-server</spring.cloud.server.image>
                             </systemPropertyVariables>
                         </configuration>
                     </execution>
