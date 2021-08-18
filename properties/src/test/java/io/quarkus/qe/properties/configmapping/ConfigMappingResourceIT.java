@@ -17,11 +17,19 @@ public class ConfigMappingResourceIT {
     private static final String EXPECTED_PERSON_LABEL_B = "Label 2";
     private static final String EXPECTED_OVERRIDES_PERSON_NAME = "Karen";
     private static final int EXPECTED_OVERRIDES_PERSON_AGE = 23;
+    private static final String EXPECTED_CUSTOM_SOURCE_PERSON_NAME = "From Config Source";
+    private static final int EXPECTED_CUSTOM_SOURCE_PERSON_AGE = 33;
 
     @Test
     public void shouldInjectInterfaceUsingOverriddenConfigWithConfigMapping() {
         assertResponseIs("/person/name/from-overrides-interface", EXPECTED_OVERRIDES_PERSON_NAME);
         assertResponseIs("/person/age/from-overrides-interface", EXPECTED_OVERRIDES_PERSON_AGE);
+    }
+
+    @Test
+    public void shouldInjectInterfaceUsingCustomSourceConfigWithConfigMapping() {
+        assertResponseIs("/person/name/from-custom-source-interface", EXPECTED_CUSTOM_SOURCE_PERSON_NAME);
+        assertResponseIs("/person/age/from-custom-source-interface", EXPECTED_CUSTOM_SOURCE_PERSON_AGE);
     }
 
     @Test

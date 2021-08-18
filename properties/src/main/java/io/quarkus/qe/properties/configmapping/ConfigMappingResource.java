@@ -15,6 +15,10 @@ public class ConfigMappingResource {
     PersonInterface personOverridesInterface;
 
     @Inject
+    @ConfigMapping(prefix = "from.custom.source.person")
+    PersonInterface personFromCustomSourceInterface;
+
+    @Inject
     PersonInterface personInterface;
 
     @GET
@@ -27,6 +31,18 @@ public class ConfigMappingResource {
     @Path("/person/age/from-overrides-interface")
     public int getPersonAgeFromOverridesInterface() {
         return personOverridesInterface.age();
+    }
+
+    @GET
+    @Path("/person/name/from-custom-source-interface")
+    public String getPersonNameFromCustomSourceInterface() {
+        return personFromCustomSourceInterface.name();
+    }
+
+    @GET
+    @Path("/person/age/from-custom-source-interface")
+    public int getPersonAgeFromCustomSourceInterface() {
+        return personFromCustomSourceInterface.age();
     }
 
     @GET
