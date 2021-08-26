@@ -9,9 +9,6 @@
     </parent>
     <artifactId>many-extensions</artifactId>
     <name>Quarkus QE TS: Many extensions</name>
-    <properties>
-        <quarkus.native.native-image-xmx>5g</quarkus.native.native-image-xmx>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>io.quarkus</groupId>
