@@ -514,7 +514,7 @@
                 <profile.id>native</profile.id>
                 <quarkus.package.type>native</quarkus.package.type>
                 <quarkus.native.container-build>true</quarkus.native.container-build>
-                <quarkus.native.native-image-xmx>4g</quarkus.native.native-image-xmx>
+                <quarkus.native.native-image-xmx>5g</quarkus.native.native-image-xmx>
                 <quarkus.native.builder-image>quay.io/quarkus/ubi-quarkus-mandrel:21.2-java11</quarkus.native.builder-image>
                 <exclude.quarkus.devmode.tests>**/*DevMode*IT.java</exclude.quarkus.devmode.tests>
             </properties>
