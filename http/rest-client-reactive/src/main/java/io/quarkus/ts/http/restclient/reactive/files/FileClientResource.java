@@ -44,8 +44,8 @@ public class FileClientResource {
     @GET
     @Path("/client-hash")
     @Blocking
-    public Uni<String> calculateHash() {
-        return Uni.createFrom().item(() -> utils.getSum(file));
+    public String calculateHash() {
+        return utils.getSum(file);
     }
 
     @GET
@@ -56,7 +56,6 @@ public class FileClientResource {
 
     @GET
     @Path("/download")
-    @Blocking
     public Uni<String> download() {
         return client.download()
                 .map(file -> {
