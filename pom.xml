@@ -13,27 +13,31 @@
         <maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <compiler-plugin.version>3.8.1</compiler-plugin.version>
+        <compiler-plugin.version>3.10.1</compiler-plugin.version>
         <surefire-plugin.version>2.22.2</surefire-plugin.version>
         <failsafe-plugin.version>2.22.2</failsafe-plugin.version>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
-        <quarkus.platform.version>999-SNAPSHOT</quarkus.platform.version>
-        <quarkus.qe.framework.version>0.0.16</quarkus.qe.framework.version>
-        <quarkus-qpid-jms.version>0.28.0</quarkus-qpid-jms.version>
-        <quarkus-ide-config.version>2.3.0.Final</quarkus-ide-config.version>
+        <quarkus.platform.version>2.10.0.Final</quarkus.platform.version>
+        <quarkus.qe.framework.version>1.2.0.Beta1</quarkus.qe.framework.version>
+        <quarkus-qpid-jms.version>0.35.0</quarkus-qpid-jms.version>
+        <quarkus-ide-config.version>2.6.1.Final</quarkus-ide-config.version>
         <apache-httpclient-fluent.version>4.5.13</apache-httpclient-fluent.version>
-        <confluent.kafka-avro-serializer.version>6.2.1</confluent.kafka-avro-serializer.version>
-        <formatter-maven-plugin.version>2.16.0</formatter-maven-plugin.version>
-        <impsort-maven-plugin.version>1.6.2</impsort-maven-plugin.version>
-        <xml-format-maven-plugin.version>3.2.0</xml-format-maven-plugin.version>
-        <checkstyle.version>9.0.1</checkstyle.version>
-        <jjwt.version>0.11.2</jjwt.version>
-        <camel-quarkus-bom.version>2.3.0</camel-quarkus-bom.version>
+        <confluent.kafka-avro-serializer.version>7.0.3</confluent.kafka-avro-serializer.version>
+        <formatter-maven-plugin.version>2.19.0</formatter-maven-plugin.version>
+        <impsort-maven-plugin.version>1.7.0</impsort-maven-plugin.version>
+        <xml-format-maven-plugin.version>3.2.1</xml-format-maven-plugin.version>
+        <checkstyle.version>10.3</checkstyle.version>
+        <jjwt.version>0.11.5</jjwt.version>
+        <jsoup.version>1.15.1</jsoup.version>
+        <camel-quarkus-bom.version>2.9.0</camel-quarkus-bom.version>
+        <quarkiverse.config.version>1.0.2</quarkiverse.config.version>
+        <smallrye-stork.version>1.1.2</smallrye-stork.version>
+        <assertj.version>3.23.1</assertj.version>
         <profile.id>jvm</profile.id>
         <!-- S2i configuration -->
         <ts.global.s2i.quarkus.jvm.builder.image>registry.access.redhat.com/ubi8/openjdk-11:latest</ts.global.s2i.quarkus.jvm.builder.image>
-        <ts.global.s2i.quarkus.native.builder.image>quay.io/quarkus/ubi-quarkus-native-s2i:21.2-java11</ts.global.s2i.quarkus.native.builder.image>
+        <ts.global.s2i.quarkus.native.builder.image>quay.io/quarkus/ubi-quarkus-native-s2i:21.3-java11</ts.global.s2i.quarkus.native.builder.image>
         <!-- Default values for format -->
         <src.format.goal>format</src.format.goal>
         <src.sort.goal>sort</src.sort.goal>
@@ -99,6 +103,17 @@
                 <artifactId>jjwt-jackson</artifactId>
                 <version>${jjwt.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${jsoup.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <scope>test</scope>
+                <version>${assertj.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <dependencies>
@@ -107,6 +122,13 @@
             <artifactId>quarkus-test-containers</artifactId>
             <version>${quarkus.qe.framework.version}</version>
             <scope>test</scope>
+            <!-- TODO: https://github.com/quarkusio/quarkus/issues/25171 - exclude hamcrest-core until the issue is resolved -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hamcrest</groupId>
+                    <artifactId>hamcrest-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.quarkus.qe</groupId>
@@ -198,23 +220,28 @@
                                 <ts.global.s2i.quarkus.jvm.builder.image>${ts.global.s2i.quarkus.jvm.builder.image}</ts.global.s2i.quarkus.jvm.builder.image>
                                 <ts.global.s2i.quarkus.native.builder.image>${ts.global.s2i.quarkus.native.builder.image}</ts.global.s2i.quarkus.native.builder.image>
                                 <!-- Services used in test suite -->
-                                <keycloak.image>quay.io/keycloak/keycloak:15.0.2</keycloak.image>
-                                <rhsso.73.image>registry.access.redhat.com/redhat-sso-7/sso73-openshift</rhsso.73.image>
-                                <postgresql.13.image>quay.io/bitnami/postgresql:13.4.0</postgresql.13.image>
-                                <mysql.57.image>quay.io/bitnami/mysql:5.7.32</mysql.57.image>
+                                <keycloak.image>quay.io/keycloak/keycloak:16.1.0</keycloak.image>
+                                <postgresql.13.image>docker.io/library/postgres:13.6</postgresql.13.image>
+                                <!-- TODO: investigate further in https://github.com/quarkus-qe/quarkus-test-suite/issues/627 -->
+                                <elastic.71.image>docker.io/bitnami/elasticsearch:7.17.2</elastic.71.image>
+                                <!--TODO change into 5.7 when this fixed https://github.com/docker-library/mysql/issues/844 -->
+                                <mysql.57.image>docker.io/library/mysql:5.7.36</mysql.57.image>
+                                <!-- TODO https://github.com/quarkus-qe/quarkus-test-suite/issues/609 -->
+                                <mysql.upstream.80.image>docker.io/library/mysql:8.0</mysql.upstream.80.image>
                                 <mysql.80.image>registry.access.redhat.com/rhscl/mysql-80-rhel7</mysql.80.image>
-                                <mariadb.10.image>quay.io/quarkusqeteam/mariadb:10.6.4</mariadb.10.image>
-                                <mariadb.102.image>registry.access.redhat.com/rhscl/mariadb-102-rhel7</mariadb.102.image>
-                                <mssql.image>mcr.microsoft.com/mssql/rhel/server</mssql.image>
-                                <oracle.image>gvenzl/oracle-xe:18.4.0-slim</oracle.image>
-                                <db2.image>quay.io/quarkusqeteam/db2:11.5.5.0</db2.image>
-                                <mongodb.image>quay.io/bitnami/mongodb:5.0.2</mongodb.image>
-                                <redis.image>quay.io/bitnami/redis:6.0</redis.image>
+                                <mariadb.10.image>docker.io/library/mariadb:10.6</mariadb.10.image>
+                                <mssql.image>mcr.microsoft.com/mssql/rhel/server:2019-latest</mssql.image>
+                                <oracle.image>docker.io/gvenzl/oracle-xe:21-slim</oracle.image>
+                                <db2.image>quay.io/quarkusqeteam/db2:11.5.7.0</db2.image>
+                                <mongodb.image>docker.io/bitnami/mongodb:5.0</mongodb.image>
+                                <redis.image>docker.io/library/redis:6.0</redis.image>
                                 <wiremock.image>quay.io/ocpmetal/wiremock</wiremock.image>
-                                <consul.image>quay.io/bitnami/consul:1.9.3</consul.image>
-                                <infinispan.image>infinispan/server:12.1</infinispan.image>
+                                <!-- TODO use official image when/if this fixed https://github.com/hashicorp/docker-consul/issues/184 -->
+                                <consul.image>docker.io/bitnami/consul:1.12.0</consul.image>
+                                <infinispan.image>quay.io/infinispan/server:12.1</infinispan.image>
                                 <infinispan.expected-log>Infinispan Server.*started in</infinispan.expected-log>
-                                <spring.cloud.server.image>hyness/spring-cloud-config-server</spring.cloud.server.image>
+                                <spring.cloud.server.image>quay.io/quarkusqeteam/spring-cloud-config-server:3.0</spring.cloud.server.image>
+                                <bouncycastle.bctls-fips.version>1.0.12.2</bouncycastle.bctls-fips.version>
                             </systemPropertyVariables>
                         </configuration>
                     </execution>
@@ -344,6 +371,29 @@
             <modules>
                 <module>config</module>
                 <module>properties</module>
+                <module>docker-build</module>
+                <module>javaee-like-getting-started</module>
+                <module>scaling</module>
+                <module>service-discovery/stork</module>
+                <module>service-discovery/stork-custom</module>
+                <module>lifecycle-application</module>
+                <module>external-applications</module>
+                <module>scheduling/quartz</module>
+                <module>infinispan-client</module>
+                <module>super-size/many-extensions</module>
+                <module>quarkus-cli</module>
+                <module>kamelet</module>
+                <module>logging/jboss</module>
+                <module>cache/caffeine</module>
+                <module>qute/multimodule</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>root-modules-no-qute</id>
+            <modules>
+                <module>config</module>
+                <module>properties</module>
+                <module>docker-build</module>
                 <module>javaee-like-getting-started</module>
                 <module>scaling</module>
                 <module>lifecycle-application</module>
@@ -367,14 +417,20 @@
             </activation>
             <modules>
                 <module>http/http-minimum</module>
+                <module>http/http-minimum-reactive</module>
                 <module>http/http-advanced</module>
+                <module>http/http-advanced-reactive</module>
                 <module>http/http-static</module>
                 <module>http/jaxrs</module>
                 <module>http/jaxrs-reactive</module>
                 <module>http/reactive-routes</module>
                 <module>http/rest-client</module>
+                <module>http/rest-client-reactive</module>
                 <module>http/servlet-undertow</module>
                 <module>http/vertx-web-client</module>
+                <module>http/hibernate-validator</module>
+                <module>http/graphql</module>
+                <module>http/graphql-telemetry</module>
             </modules>
         </profile>
         <profile>
@@ -387,6 +443,8 @@
             </activation>
             <modules>
                 <module>security/basic</module>
+                <module>security/bouncycastle-fips</module>
+                <module>security/form-authn</module>
                 <module>security/https</module>
                 <module>security/jwt</module>
                 <module>security/keycloak</module>
@@ -398,7 +456,9 @@
                 <module>security/keycloak-multitenant</module>
                 <module>security/keycloak-oidc-client-basic</module>
                 <module>security/keycloak-oidc-client-extended</module>
+                <module>security/keycloak-oidc-client-reactive</module>
                 <module>security/vertx-jwt</module>
+                <module>security/oidc-client-mutual-tls</module>
             </modules>
         </profile>
         <profile>
@@ -410,14 +470,23 @@
                 </property>
             </activation>
             <modules>
-                <module>messaging/artemis</module>
-                <module>messaging/artemis-jta</module>
                 <module>messaging/amqp-reactive</module>
                 <module>messaging/qpid</module>
                 <module>messaging/kafka-streams-reactive-messaging</module>
-                <module>messaging/kafka-avro-reactive-messaging</module>
+                <module>messaging/kafka-confluent-avro-reactive-messaging</module>
+                <module>messaging/kafka-strimzi-avro-reactive-messaging</module>
                 <module>messaging/kafka-producer</module>
+                <module>messaging/kafkaSSL</module>
                 <module>messaging/infinispan-grpc-kafka</module>
+                <module>messaging/cloud-events/amqp-binary</module>
+                <module>messaging/cloud-events/amqp-json</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>messaging-modules-no-kafka</id>
+            <modules>
+                <module>messaging/amqp-reactive</module>
+                <module>messaging/qpid</module>
             </modules>
         </profile>
         <profile>
@@ -431,8 +500,10 @@
             <modules>
                 <module>monitoring/micrometer-prometheus</module>
                 <module>monitoring/micrometer-prometheus-kafka</module>
+                <module>monitoring/micrometer-prometheus-kafka-reactive</module>
                 <module>monitoring/micrometer-prometheus-oidc</module>
                 <module>monitoring/opentelemetry</module>
+                <module>monitoring/opentelemetry-reactive</module>
                 <module>monitoring/microprofile-opentracing</module>
                 <module>monitoring/opentracing-reactive-grpc</module>
             </modules>
@@ -451,7 +522,9 @@
                 <module>sql-db/multiple-pus</module>
                 <module>sql-db/panache-flyway</module>
                 <module>sql-db/vertx-sql</module>
+                <module>sql-db/hibernate-reactive</module>
                 <module>sql-db/reactive-vanilla</module>
+                <module>sql-db/hibernate-fulltext-search</module>
             </modules>
         </profile>
         <profile>
@@ -478,6 +551,7 @@
             <modules>
                 <module>spring/spring-data</module>
                 <module>spring/spring-web</module>
+                <module>spring/spring-web-reactive</module>
                 <module>spring/spring-properties</module>
                 <module>spring/spring-cloud-config</module>
                 <module>cache/spring</module>
@@ -541,7 +615,7 @@
                 <quarkus.package.type>native</quarkus.package.type>
                 <quarkus.native.container-build>true</quarkus.native.container-build>
                 <quarkus.native.native-image-xmx>4g</quarkus.native.native-image-xmx>
-                <quarkus.native.builder-image>quay.io/quarkus/ubi-quarkus-mandrel:21.2-java11</quarkus.native.builder-image>
+                <quarkus.native.builder-image>quay.io/quarkus/ubi-quarkus-mandrel:21.3-java11</quarkus.native.builder-image>
                 <exclude.quarkus.devmode.tests>**/*DevMode*IT.java</exclude.quarkus.devmode.tests>
             </properties>
         </profile>
@@ -575,10 +649,11 @@
                             <systemPropertyVariables>
                                 <ts.redhat.registry.enabled>true</ts.redhat.registry.enabled>
                                 <!-- Product Services -->
-                                <rhsso.74.image>registry.redhat.io/rh-sso-7/sso74-openshift-rhel8</rhsso.74.image>
+                                <rhsso.image>registry.redhat.io/rh-sso-7/sso75-openshift-rhel8</rhsso.image>
                                 <postgresql.10.image>registry.redhat.io/rhscl/postgresql-10-rhel7</postgresql.10.image>
-                                <postgresql.12.image>registry.redhat.io/rhscl/postgresql-12-rhel7</postgresql.12.image>
+                                <postgresql.13.image>registry.redhat.io/rhscl/postgresql-13-rhel7</postgresql.13.image>
                                 <mariadb.103.image>registry.redhat.io/rhscl/mariadb-103-rhel7</mariadb.103.image>
+                                <mariadb.105.image>registry.redhat.io/rhel8/mariadb-105</mariadb.105.image>
                                 <amq-streams.image>registry.redhat.io/amq7/amq-streams-kafka-27-rhel7</amq-streams.image>
                                 <amq-streams.version>1.7.0</amq-streams.version>
                             </systemPropertyVariables>
