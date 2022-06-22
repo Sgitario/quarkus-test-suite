@@ -56,6 +56,7 @@ public class FileClientResource {
 
     @GET
     @Path("/download")
+    @Blocking
     public Uni<String> download() {
         return client.download()
                 .map(file -> {
@@ -68,6 +69,7 @@ public class FileClientResource {
 
     @GET
     @Path("/download-multipart")
+    @Blocking
     public Uni<String> downloadMultipart() {
         return client.downloadMultipart()
                 .map(wrapper -> wrapper.file.toPath())
@@ -78,6 +80,7 @@ public class FileClientResource {
 
     @GET
     @Path("/download-broken-multipart")
+    @Blocking
     public Uni<String> downloadMultipartResponse() {
         return client.brokenMultipart()
                 .map(wrapper -> wrapper.file.toPath().toAbsolutePath())
