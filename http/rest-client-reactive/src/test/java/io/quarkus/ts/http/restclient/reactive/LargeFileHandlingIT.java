@@ -9,12 +9,15 @@ import java.io.InputStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.RepeatedTest;
@@ -34,9 +37,9 @@ public class LargeFileHandlingIT {
 
     private static final long BIGGER_THAN_TWO_GIGABYTES = OsUtils.SIZE_2049MiB;
     private static final Path files = getTempDirectory();
-    private final Path downloaded;
     private final Path uploaded;
     private final OsUtils utils;
+    private final List<Path> toBeDeleted = new ArrayList<>();
 
     private static Path getTempDirectory() {
         try {
@@ -51,9 +54,19 @@ public class LargeFileHandlingIT {
             .withProperty("client.filepath", () -> files.toAbsolutePath().toString())
             .withProperties("modern.properties");
 
+    @AfterEach
+    public void deleteFiles() {
+        for (Path toBeDelete : toBeDeleted) {
+            try {
+                Files.delete(toBeDelete);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     @Inject
     public LargeFileHandlingIT() {
-        downloaded = files.resolve("downloaded.txt");
         uploaded = files.resolve("uploaded.txt");
         utils = OsUtils.get();
     }
@@ -78,6 +91,9 @@ public class LargeFileHandlingIT {
         Response download = app.given().get("/file/download");
         assertEquals(HttpStatus.SC_OK, download.statusCode());
         InputStream stream = download.body().asInputStream();
+
+        Path downloaded = Files.createTempFile("download", ".out");
+        toBeDeleted.add(downloaded);
         Files.copy(stream, downloaded);
         String clientSum = utils.getSum(downloaded);
         assertEquals(serverSum, clientSum);
