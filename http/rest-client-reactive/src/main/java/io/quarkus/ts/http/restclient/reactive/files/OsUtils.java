@@ -1,16 +1,12 @@
 package io.quarkus.ts.http.restclient.reactive.files;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.DigestOutputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
-import javax.xml.bind.DatatypeConverter;
+import org.apache.commons.codec.digest.DigestUtils;
 
 public abstract class OsUtils {
     public static final long SIZE_2049MiB = 2148532224L;
@@ -28,16 +24,9 @@ class JavaUtils extends OsUtils {
 
     @Override
     public String getSum(Path path) {
-        try {
-            final MessageDigest digest = MessageDigest.getInstance("MD5");
-            try (BufferedInputStream stream = new BufferedInputStream(Files.newInputStream(path))) {
-                DigestOutputStream digestStream = new DigestOutputStream(OutputStream.nullOutputStream(), digest);
-                stream.transferTo(digestStream);
-                return DatatypeConverter.printHexBinary(digest.digest()).toLowerCase();
-            } catch (IOException e) {
-                throw new IllegalStateException(e);
-            }
-        } catch (NoSuchAlgorithmException e) {
+        try (InputStream stream = Files.newInputStream(path)) {
+            return DigestUtils.md5Hex(stream);
+        } catch (IOException e) {
             throw new IllegalStateException(e);
         }
     }
