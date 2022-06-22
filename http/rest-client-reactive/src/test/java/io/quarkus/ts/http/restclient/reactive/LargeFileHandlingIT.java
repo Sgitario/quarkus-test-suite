@@ -17,7 +17,6 @@ import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
@@ -157,7 +156,7 @@ public class LargeFileHandlingIT {
         assertEquals(before, after);
     }
 
-    @RepeatedTest(1)
+    @Test
     public void uploadMultipart() {
         Response hashSum = app.given().get("/file-client/client-hash");
         assertEquals(HttpStatus.SC_OK, hashSum.statusCode());
