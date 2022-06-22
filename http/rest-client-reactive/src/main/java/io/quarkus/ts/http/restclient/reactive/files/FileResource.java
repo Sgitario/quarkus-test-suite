@@ -87,6 +87,7 @@ public class FileResource {
     @GET
     @Path("/hash")
     @Produces(MediaType.TEXT_PLAIN)
+    @Blocking
     public String getHashSum() {
         Log.info("Hashing path " + file.getAbsolutePath());
         return utils.getSum(file.getAbsoluteFile().toPath());
