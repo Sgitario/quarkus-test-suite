@@ -157,7 +157,7 @@ public class LargeFileHandlingIT {
         assertEquals(before, after);
     }
 
-    @RepeatedTest(10)
+    @RepeatedTest(1)
     public void uploadMultipart() {
         Response hashSum = app.given().get("/file-client/client-hash");
         assertEquals(HttpStatus.SC_OK, hashSum.statusCode());
