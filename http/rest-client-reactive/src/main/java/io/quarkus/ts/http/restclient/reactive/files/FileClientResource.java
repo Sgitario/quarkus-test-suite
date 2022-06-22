@@ -56,14 +56,16 @@ public class FileClientResource {
 
     @GET
     @Path("/download")
-    public Uni<String> download() {
+    @Blocking
+    public String download() {
         return client.download()
                 .map(file -> {
                     java.nio.file.Path path = file.toPath().toAbsolutePath();
                     deathRow.add(path);
                     return path;
                 })
-                .map(utils::getSum);
+                .map(utils::getSum)
+                .await().indefinitely();
     }
 
     @GET
